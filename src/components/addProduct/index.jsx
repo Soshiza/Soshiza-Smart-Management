@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { ref, query, orderByChild, equalTo, get } from "firebase/database";
+import { ref, query, orderByChild, equalTo, get, push } from "firebase/database";
 import { database, authentication } from "@/config/firebase";
 
-const SearchProduct = () => {
+const AddProduct = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -57,24 +57,26 @@ const SearchProduct = () => {
     setSearchQuery(e.target.value);
   };
 
-  const downloadQRCode = async (qrCodeImageUrl) => {
+  const handleAddToSale = async (product) => {
     try {
-      const response = await fetch(qrCodeImageUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "qr_code.png"; // Nombre de archivo para descargar
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      if (product.quantity < 1) {
+        throw new Error("No hay stock de este producto");
+      }
+
+      const saleRef = ref(database, `clientes/${userUID}/ventas/SellT`);
+      await push(saleRef, {
+        name: product.name,
+        price: product.price,
+      });
+      console.log("Producto agregado a la venta");
     } catch (error) {
-      console.error("Error downloading QR code:", error);
+      console.error("Error adding product to sale:", error);
+      alert(error.message);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto my-8 px-4 bg-glass" style={{ width: "640px" }}>
+    <div className="w-1/3 my-8 px-4 bg-glass">
       <input
         type="text"
         value={searchQuery}
@@ -93,18 +95,10 @@ const SearchProduct = () => {
                 <div className="mb-4">
                   <h3 className="font-semibold">Nombre Producto</h3>
                   <p>{product.name}</p>
-                  <h3 className="mt-4 font-semibold">Fecha de Entrada</h3>
-                  <p>{product.entryDate}</p>
-                  <h3 className="mt-4 font-semibold">Precio Compra</h3>
-                  <p>{product.unitValue}</p>
-                  <h3 className="mt-4 font-semibold">Precio Venta</h3>
+                  <h3 className="mt-4 font-semibold">Precio</h3>
                   <p>{product.price}</p>
                   <h3 className="mt-4 font-semibold">Cantidad Disponible</h3>
                   <p>{product.quantity}</p>
-                  <h3 className="mt-4 font-semibold">Disponible</h3>
-                  <p>{product.available === "si" ? "Sí" : "No"}</p>
-                  <h3 className="mt-4 font-semibold">Categoría</h3>
-                  <p>{product.category}</p>
                 </div>
                 <div>
                   <h3 className="font-semibold">Descripción del Producto</h3>
@@ -114,12 +108,12 @@ const SearchProduct = () => {
               <div className="w-1/2 flex justify-center items-center gap-2">
                 <div className="flex flex-col justify-center items-center">
                   <img src={product.imageUrl} alt={product.name} style={{ width: "200px", height: "auto", marginBottom: "10px" }} />
-                  <img src={product.qrCodeImageUrl} alt={`QR Code for ${product.name}`} style={{ width: "200px", height: "auto" }} />
-                  <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2"
-                    onClick={() => downloadQRCode(product.qrCodeImageUrl)}
+                  <button 
+                    className={`bg-blue-500 text-white px-4 py-2 rounded ${product.quantity < 1 ? "cursor-not-allowed opacity-50" : ""}`}
+                    onClick={() => handleAddToSale(product)}
+                    disabled={product.quantity < 1}
                   >
-                    Descargar QR
+                    Agregar a la venta
                   </button>
                 </div>
               </div>
@@ -133,4 +127,4 @@ const SearchProduct = () => {
   );
 };
 
-export default SearchProduct;
+export default AddProduct;

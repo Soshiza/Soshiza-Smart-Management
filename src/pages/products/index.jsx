@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { signOut } from 'firebase/auth'; // Importa la función de cierre de sesión de Firebase
-import { authentication } from '@/config/firebase'; // Importa la instancia de autenticación de Firebase
+import { signOut } from 'firebase/auth'; 
+import { authentication } from '@/config/firebase'; 
 import ProtectedRoute from '@/auth/protectedRoute';
 import '@/app/globals.css'
 import Header from '@/components/header/header';

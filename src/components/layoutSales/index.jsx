@@ -1,29 +1,23 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion'; 
-import ProductForm from '../productForm';
+import SalesTable from '../dailySales';
+import SaleByDate from '../saleByDate';
+import SalesAnalysis from '../salesAnalysis';
 
-import './index.css';
-import SearchProduct from '../searchProducts';
-import UpdateProduct from '../updateProducts';
-import Categories from '../addCategory';
 
-const LayoutProducts = () => {
+const LayoutSales = () => {
     const [selectedComponent, setSelectedComponent] = useState(null);
 
-    const handleAddProductClick = () => {
-        setSelectedComponent('ProductForm');
+    const handleSaleDailyClick = () => {
+        setSelectedComponent('DaylySales');
     };
 
-    const handleSearchProductClick = () => {
-        setSelectedComponent('SearchProduct');
+    const handleSaleByDateClick = () => {
+        setSelectedComponent('SaleByDate');
     };
 
-    const handleUpdateProductClick = () => {
-        setSelectedComponent('UpdateProduct');
-    };
-
-    const handleAddCategoryClick = () => {
-        setSelectedComponent('Categories');
+    const handleSalesAnalysisClick = () => {
+        setSelectedComponent('SalesAnalysis');
     };
 
     const componentVariants = {
@@ -33,28 +27,22 @@ const LayoutProducts = () => {
 
     const renderSelectedComponent = () => {
         switch (selectedComponent) {
-            case 'ProductForm':
+            case 'DaylySales':
                 return (
                     <motion.div variants={componentVariants} initial="hidden" animate="visible" exit="hidden" className="flex justify-center items-center h-full">
-                        <ProductForm />
+                        <SalesTable />
                     </motion.div>
                 );
-            case 'SearchProduct':
+            case 'SaleByDate':
                 return (
                     <motion.div variants={componentVariants} initial="hidden" animate="visible" exit="hidden">
-                        <SearchProduct />
+                        <SaleByDate />
                     </motion.div>
                 );
-            case 'UpdateProduct':
+            case 'SalesAnalysis':
                 return (
                     <motion.div variants={componentVariants} initial="hidden" animate="visible" exit="hidden">
-                        <UpdateProduct />
-                    </motion.div>
-                );
-                case 'Categories':
-                return (
-                    <motion.div variants={componentVariants} initial="hidden" animate="visible" exit="hidden">
-                        <Categories />
+                        <SalesAnalysis />
                     </motion.div>
                 );
             default:
@@ -68,31 +56,24 @@ const LayoutProducts = () => {
                 <div className="flex flex-col items-center text-center mt-5">
                     <motion.div
                         className="bg-glass w-48 h-6 mb-1 rounded-full"
-                        onClick={handleAddProductClick}
+                        onClick={handleSaleDailyClick}
                         whileHover={{ backgroundColor: '#d1d5db', cursor: 'pointer' }}
                     >
-                        Agregar Producto
+                        Venta Diaria
                     </motion.div>
                     <motion.div
                         className="bg-glass w-48 h-6 mb-1 rounded-full"
-                        onClick={handleSearchProductClick}
+                        onClick={handleSaleByDateClick}
                         whileHover={{ backgroundColor: '#d1d5db', cursor: 'pointer' }}
                     >
-                        Buscar Producto
+                        Ventas Segun fecha
                     </motion.div>
                     <motion.div
                         className="bg-glass w-48 h-6 mb-1 rounded-full"
-                        onClick={handleUpdateProductClick}
+                        onClick={handleSalesAnalysisClick}
                         whileHover={{ backgroundColor: '#d1d5db', cursor: 'pointer' }}
                     >
-                        Actualizar Producto
-                    </motion.div>
-                    <motion.div
-                        className="bg-glass w-48 h-6 mb-1 rounded-full"
-                        onClick={handleAddCategoryClick}
-                        whileHover={{ backgroundColor: '#d1d5db', cursor: 'pointer' }}
-                    >
-                        Agregar Categorias
+                        Analisis Venta Productos
                     </motion.div>
                 </div>
                 <div className="ml-4 flex-grow" layout>{renderSelectedComponent()}</div>
@@ -101,4 +82,4 @@ const LayoutProducts = () => {
     );
 };
 
-export default LayoutProducts;
+export default LayoutSales;
