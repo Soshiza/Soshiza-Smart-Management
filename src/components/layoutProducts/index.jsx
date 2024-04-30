@@ -5,6 +5,7 @@ import ProductForm from '../productForm';
 import './index.css';
 import SearchProduct from '../searchProducts';
 import UpdateProduct from '../updateProducts';
+import Categories from '../addCategory';
 
 const LayoutProducts = () => {
     const [selectedComponent, setSelectedComponent] = useState(null);
@@ -19,6 +20,10 @@ const LayoutProducts = () => {
 
     const handleUpdateProductClick = () => {
         setSelectedComponent('UpdateProduct');
+    };
+
+    const handleAddCategoryClick = () => {
+        setSelectedComponent('Categories');
     };
 
     const componentVariants = {
@@ -44,6 +49,12 @@ const LayoutProducts = () => {
                 return (
                     <motion.div variants={componentVariants} initial="hidden" animate="visible" exit="hidden">
                         <UpdateProduct />
+                    </motion.div>
+                );
+                case 'Categories':
+                return (
+                    <motion.div variants={componentVariants} initial="hidden" animate="visible" exit="hidden">
+                        <Categories />
                     </motion.div>
                 );
             default:
@@ -75,6 +86,13 @@ const LayoutProducts = () => {
                         whileHover={{ backgroundColor: '#d1d5db', cursor: 'pointer' }}
                     >
                         Actualizar Producto
+                    </motion.div>
+                    <motion.div
+                        className="bg-glass w-48 h-6 mb-1 rounded-full"
+                        onClick={handleAddCategoryClick}
+                        whileHover={{ backgroundColor: '#d1d5db', cursor: 'pointer' }}
+                    >
+                        Agregar Categorias
                     </motion.div>
                 </div>
                 <div className="ml-4 flex-grow" layout>{renderSelectedComponent()}</div>
