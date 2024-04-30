@@ -103,6 +103,8 @@ const SearchProduct = () => {
                   <p>{product.quantity}</p>
                   <h3 className="mt-4 font-semibold">Disponible</h3>
                   <p>{product.available === "si" ? "Sí" : "No"}</p>
+                  <h3 className="mt-4 font-semibold">Categoría</h3>
+                  <p>{product.category}</p>
                 </div>
                 <div>
                   <h3 className="font-semibold">Descripción del Producto</h3>
