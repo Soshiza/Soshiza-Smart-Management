@@ -13,6 +13,8 @@ const EditProduct = () => {
   const [unitValue, setUnitValue] = useState("");
   const [quantity, setQuantity] = useState("");
   const [defectiveQuantity, setDefectiveQuantity] = useState("");
+  const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState([]);
   const [message, setMessage] = useState("");
   const [addingNormalProduct, setAddingNormalProduct] = useState(false);
   const [addingDefectiveProduct, setAddingDefectiveProduct] = useState(false);
@@ -43,8 +45,28 @@ const EditProduct = () => {
       setAvailable(product.available || "");
       setQuantity("");
       setDefectiveQuantity(product.defectiveQuantity || "");
+      setCategory(product.category || "");
     }
   }, [product]);
+
+  useEffect(() => {
+    const categoriesRef = ref(database, `clientes/${uid}/category`);
+    get(categoriesRef)
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const categoriesData = snapshot.val();
+          const categoriesList = Object.keys(categoriesData).map(
+            (key) => categoriesData[key].name
+          );
+          setCategories(categoriesList);
+        } else {
+          console.log("No hay categorías disponibles");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+      });
+  }, [uid]);
 
   const handleSearch = () => {
     if (!searchTerm) {
@@ -113,6 +135,9 @@ const EditProduct = () => {
       const updatedTotalQuantity =
         parseInt(product.quantity) - parseInt(defectiveQuantity);
       updatedData.quantity = updatedTotalQuantity.toString();
+    }
+    if (category.trim() !== "") {
+      updatedData.category = category;
     }
     update(productRef, updatedData)
       .then(() => {
@@ -197,16 +222,16 @@ const EditProduct = () => {
               className="text-gray-500 w-full p-2 mt-1 border-gray-300 border rounded-md focus:outline-none focus:border-blue-500"
             />
           </div>
-            <div className="mt-2">
+          <div className="mt-2">
             <label className="block">Disponible:</label>
             <input
-                type="text"
-                value={available}
-                onChange={(e) => setAvailable(e.target.value)}
-                placeholder={product.available.toString()}
-                className="text-gray-500 w-full p-2 mt-1 border-gray-300 border rounded-md focus:outline-none focus:border-blue-500"
+              type="text"
+              value={available}
+              onChange={(e) => setAvailable(e.target.value)}
+              placeholder={product.available.toString()}
+              className="text-gray-500 w-full p-2 mt-1 border-gray-300 border rounded-md focus:outline-none focus:border-blue-500"
             />
-            </div>
+          </div>
           {addingNormalProduct && (
             <div className="mt-2">
               <label className="block">Cantidad:</label>
@@ -244,6 +269,25 @@ const EditProduct = () => {
             >
               Agregar Producto Defectuoso
             </button>
+          </div>
+          <div className="mt-2">
+            <label className="block">Categoría actual:</label>
+            <p>{product.category}</p>
+          </div>
+          <div className="mt-2">
+            <label className="block">Categoría:</label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="text-gray-500 w-full p-2 mt-1 border-gray-300 border rounded-md focus:outline-none focus:border-blue-500"
+            >
+              <option value="">Seleccionar categoría</option>
+              {categories.map((cat, index) => (
+                <option key={index} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
           </div>
           <button
             onClick={handleUpdate}
