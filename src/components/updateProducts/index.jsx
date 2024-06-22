@@ -1,9 +1,12 @@
 "use client";
 
+"use client";
+
 import React, { useState, useEffect } from "react";
-import { database } from "@/config/firebase";
+import { database, storage } from "@/config/firebase";
 import { ref, get, update } from "firebase/database";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getDownloadURL, uploadBytes, ref as storageRef } from "firebase/storage";
 
 const EditProduct = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,6 +26,7 @@ const EditProduct = () => {
   const [uid, setUid] = useState(null);
   const [description, setDescription] = useState("");
   const [available, setAvailable] = useState(null);
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
     const auth = getAuth();
@@ -106,7 +110,13 @@ const EditProduct = () => {
       });
   };
 
-  const handleUpdate = () => {
+  const handleImageChange = (e) => {
+    if (e.target.files[0]) {
+      setImage(e.target.files[0]);
+    }
+  };
+
+  const handleUpdate = async () => {
     const productRef = ref(database, `clientes/${uid}/products/${product.key}`);
     const updatedData = {};
     if (name.trim() !== "") {
@@ -139,6 +149,19 @@ const EditProduct = () => {
     if (category.trim() !== "") {
       updatedData.category = category;
     }
+
+    let imageUrl = product.imageUrl; // Mantener la URL de la imagen anterior por defecto
+    if (image) {
+      // Crear una referencia única para la nueva imagen dentro de la carpeta del usuario
+      const imageStorageRef = storageRef(
+        storage,
+        `users/${uid}/images/${image.name}`
+      );
+      await uploadBytes(imageStorageRef, image);
+      imageUrl = await getDownloadURL(imageStorageRef);
+      updatedData.imageUrl = imageUrl; // Actualizar la URL de la imagen si se cargó una nueva imagen
+    }
+
     update(productRef, updatedData)
       .then(() => {
         setUpdateMessage("Producto actualizado exitosamente");
@@ -229,6 +252,14 @@ const EditProduct = () => {
               value={available}
               onChange={(e) => setAvailable(e.target.value)}
               placeholder={product.available.toString()}
+              className="text-gray-500 w-full p-2 mt-1 border-gray-300 border rounded-md focus:outline-none focus:border-blue-500"
+            />
+          </div>
+          <div className="mt-2">
+            <label className="block">Imagen:</label>
+            <input
+              type="file"
+              onChange={handleImageChange}
               className="text-gray-500 w-full p-2 mt-1 border-gray-300 border rounded-md focus:outline-none focus:border-blue-500"
             />
           </div>

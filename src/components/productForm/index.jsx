@@ -250,7 +250,6 @@ const ProductForm = () => {
         onChange={handleImageChange}
         className="hidden"
         id="fileInput"
-        required
       />
       <label
         htmlFor="fileInput"
